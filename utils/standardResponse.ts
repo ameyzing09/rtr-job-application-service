@@ -1,9 +1,5 @@
 import { Response } from 'express';
-
-export interface ApiResponse<T, E = string> {
-  data: T | null;
-  error: E | null;
-}
+import { ApiResponse } from '../types/apiResponse';
 
 /**
  * Sends success response with data.
@@ -16,11 +12,12 @@ export interface ApiResponse<T, E = string> {
 export function sendSuccessResponse<T>(
   res: Response,
   data: T,
+  meta: { code?: string; message?: string } = {},
   headers: Record<string, string> = {},
   statusCode: number = 200
 ): void {
   Object.entries(headers).forEach(([key, value]) => res.setHeader(key, value));
-  const responseBody: ApiResponse<T> = { data, error: null };
+  const responseBody: ApiResponse<T> = { success: true, data, error: null, meta };
   res.status(statusCode).json(responseBody);
 }
 
@@ -35,10 +32,11 @@ export function sendSuccessResponse<T>(
 export function sendErrorResponse<E = string>(
   res: Response,
   error: E,
+  meta: { code?: string; message?: string } = {},
   headers: Record<string, string> = {},
   statusCode: number = 500
 ): void {
   Object.entries(headers).forEach(([key, value]) => res.setHeader(key, value));
-  const responseBody: ApiResponse<null, E> = { data: null, error };
+  const responseBody: ApiResponse<null, E> = { success: false, data: null, error, meta };
   res.status(statusCode).json(responseBody);
 }

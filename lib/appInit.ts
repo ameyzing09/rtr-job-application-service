@@ -1,14 +1,17 @@
 import express from 'express';
 import cors from 'cors';
-class App {
-    private app!: express.Express;
+class AppInit {
+    private readonly app: express.Application;
 
-    async initialiseBackendServer() {
+    constructor() {
         this.app = express();
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(cors())
     }
+    get instance() {
+        return this.app;
+    }
 }
 
-export default new App();
+export default new AppInit();

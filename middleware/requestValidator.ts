@@ -28,7 +28,7 @@ const requestValidator = (req: Request, res: Response, next: NextFunction): void
       details: formattedErrors,
     };
 
-    return sendErrorResponse(res, errorResponse, {}, HTTP_ERRORS.BAD_REQUEST);
+    return sendErrorResponse(res, {}, errorResponse, {}, HTTP_ERRORS.BAD_REQUEST);
   }
 
   return next();

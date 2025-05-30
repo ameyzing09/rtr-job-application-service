@@ -19,6 +19,10 @@ const ERROR_MESSAGES = {
     code: 'INVALID_REQUEST',
     message: 'Invalid Request'
   },
+  TENANT_NOT_FOUND: {
+    code: 'TENANT_NOT_FOUND',
+    message: 'Tenant not found'
+  },
   BAD_REQUEST: {
     code: 'BAD_REQUEST',
     message: 'Bad Request'
@@ -82,10 +86,10 @@ const ERROR_MESSAGES = {
 };
 
 const SUCCESS_MESSAGES = {
-  USER_CREATED: {
-    code: 'USER_CREATED',
-    message: 'User created'
-  }
+  JOB_CREATED: {
+    code: 'JOB_CREATED',
+    message: 'Job created successfully'
+  },
 };
 
 export { HTTP_ERRORS, HTTP_SUCCESS, ERROR_MESSAGES, SUCCESS_MESSAGES };
