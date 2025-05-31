@@ -11,7 +11,7 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || 'ameykode',
   database: process.env.DB_NAME || 'recrutr-db',
-  entities: [Job/*, Application*/],
+  entities: [Job /*, Application*/],
   migrations: ['src/migrations/*.ts'],
   synchronize: false,
 });
