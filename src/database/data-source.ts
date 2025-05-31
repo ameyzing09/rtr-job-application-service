@@ -1,6 +1,6 @@
-import { Job } from '../job/job.entity';
-import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
+import { DataSource } from 'typeorm';
+import { Job } from '../job/job.entity';
 import { Application } from '../applications/applications.entity';
 dotenv.config();
 
