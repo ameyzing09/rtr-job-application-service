@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -10,6 +11,9 @@ import {
 } from 'typeorm';
 
 @Entity('applications')
+@Index('idx_app_tenant', ['tenant_id'])
+@Index('idx_app_job', ['job_id'])
+@Index('idx_app_tenant_status', ['tenant_id', 'status'])
 export class Application {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -17,7 +21,7 @@ export class Application {
   @Column({ type: 'uuid' })
   tenant_id: string;
 
-  @Column({ type: 'uuid' })
+  @Column({ name: 'job_id', type: 'uuid' })
   job_id: string;
 
   @Column()

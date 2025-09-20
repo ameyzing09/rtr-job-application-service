@@ -6,9 +6,12 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  Index,
 } from 'typeorm';
 
 @Entity('jobs')
+@Index('idx_jobs_tenant', ['tenant_id'])
+@Index('idx_jobs_tenant_title', ['tenant_id', 'title'])
 export class Job {
   @PrimaryGeneratedColumn('uuid')
   id: string;
