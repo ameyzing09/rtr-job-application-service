@@ -31,6 +31,9 @@ export class Job {
   @Column({ nullable: true })
   department?: string;
 
+  @Column({ type: 'json', nullable: true })
+  extra?: Record<string, unknown>;
+
   @CreateDateColumn({ name: 'created_at' })
   created_at: Date;
 
