@@ -52,4 +52,19 @@ export class JobService {
     const job = await this.getJobsById(tenant_id, jobId);
     await this.jobRepository.remove(job);
   }
+
+  async publishJob(tenant_id: string, jobId: string): Promise<Job> {
+    const job = await this.getJobsById(tenant_id, jobId);
+    job.is_public = true;
+    if (!job.publish_at) {
+      job.publish_at = new Date();
+    }
+    return this.jobRepository.save(job);
+  }
+
+  async unpublishJob(tenant_id: string, jobId: string): Promise<Job> {
+    const job = await this.getJobsById(tenant_id, jobId);
+    job.is_public = false;
+    return this.jobRepository.save(job);
+  }
 }

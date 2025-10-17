@@ -10,6 +10,8 @@ import * as jwt from 'jsonwebtoken';
 interface JwtPayload {
   tenant_id?: string;
   tid?: string;
+  role?: string;
+  roles?: string[];
   [key: string]: unknown;
 }
 
