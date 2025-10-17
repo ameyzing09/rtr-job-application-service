@@ -67,10 +67,10 @@ export class TenantMiddleware implements NestMiddleware {
     } catch (error) {
       if (error instanceof UnauthorizedException) {
         res.status(401).json({ message: error.message });
-      } else if (error instanceof jwt.JsonWebTokenError) {
-        res.status(401).json({ message: 'Invalid token' });
       } else if (error instanceof jwt.TokenExpiredError) {
         res.status(401).json({ message: 'Token expired' });
+      } else if (error instanceof jwt.JsonWebTokenError) {
+        res.status(401).json({ message: 'Invalid token' });
       } else {
         res.status(500).json({ message: 'Internal server error' });
       }
