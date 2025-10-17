@@ -1,7 +1,12 @@
 import { TenantMiddleware } from './tenant.middleware';
+import { ConfigService } from '@nestjs/config';
 
 describe('TenantMiddleware', () => {
   it('should be defined', () => {
-    expect(new TenantMiddleware()).toBeDefined();
+    const mockConfigService = {
+      get: jest.fn(),
+    } as unknown as ConfigService;
+
+    expect(new TenantMiddleware(mockConfigService)).toBeDefined();
   });
 });
