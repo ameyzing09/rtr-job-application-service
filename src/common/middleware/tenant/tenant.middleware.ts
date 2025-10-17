@@ -36,10 +36,11 @@ export class TenantMiddleware implements NestMiddleware {
       const token = authHeader.substring(7); // Remove 'Bearer ' prefix
 
       // Get JWT secret (you may want to fetch tenant-specific secret)
-      const jwtSecret = this.configService.get<string>(
-        'JWT_SECRET',
-        'default-secret-key',
-      );
+      const jwtSecret = this.configService.get<string>('JWT_SECRET');
+      if (!jwtSecret) {
+        res.status(500).json({ message: 'JWT secret is not configured' });
+        return;
+      }
 
       // Verify and decode token
       const decoded = jwt.verify(token, jwtSecret) as JwtPayload;
