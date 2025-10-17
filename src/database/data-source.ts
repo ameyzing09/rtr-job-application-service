@@ -2,6 +2,7 @@ import * as dotenv from 'dotenv';
 import { DataSource } from 'typeorm';
 import { Job } from '../job/job.entity';
 import { Application } from '../applications/applications.entity';
+import { Tenant } from '../tenant/tenant.entity';
 
 dotenv.config();
 
@@ -12,7 +13,7 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || 'ameykode',
   database: process.env.DB_NAME || 'recrutr-db',
-  entities: [Job, Application],
+  entities: [Job, Application, Tenant],
   migrations: ['dist/migrations/*.js', 'src/migrations/*.ts'],
   migrationsTableName: 'migrations',
   synchronize: false,
