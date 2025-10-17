@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
 
 export class CreateJobDto {
   @IsString()
@@ -17,6 +17,10 @@ export class CreateJobDto {
   @IsString()
   @IsOptional()
   department?: string;
+
+  @IsObject()
+  @IsOptional()
+  extra?: Record<string, unknown>;
 }
 
 export class UpdateJobDto {
@@ -35,4 +39,8 @@ export class UpdateJobDto {
   @IsString()
   @IsOptional()
   department?: string;
+
+  @IsObject()
+  @IsOptional()
+  extra?: Record<string, unknown>;
 }
