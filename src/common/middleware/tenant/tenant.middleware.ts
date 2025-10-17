@@ -20,7 +20,7 @@ export class TenantMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     try {
       // Extract tenant ID from header
-      const tenantIdFromHeader = req.headers['X-Tenant-ID'] as string;
+      const tenantIdFromHeader = req.headers['x-tenant-id'] as string;
       if (!tenantIdFromHeader) {
         throw new UnauthorizedException('Missing x-tenant-id header');
       }
