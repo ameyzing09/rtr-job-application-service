@@ -12,6 +12,7 @@ import {
 @Entity('jobs')
 @Index('idx_jobs_tenant', ['tenant_id'])
 @Index('idx_jobs_tenant_title', ['tenant_id', 'title'])
+@Index('idx_jobs_public', ['tenant_id', 'is_public', 'publish_at'])
 export class Job {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -30,6 +31,18 @@ export class Job {
 
   @Column({ nullable: true })
   department?: string;
+
+  @Column({ type: 'boolean', default: false })
+  is_public: boolean;
+
+  @Column({ type: 'datetime', nullable: true })
+  publish_at?: Date;
+
+  @Column({ type: 'datetime', nullable: true })
+  expire_at?: Date;
+
+  @Column({ length: 255, nullable: true })
+  external_apply_url?: string;
 
   @Column({ type: 'json', nullable: true })
   extra?: Record<string, unknown>;
