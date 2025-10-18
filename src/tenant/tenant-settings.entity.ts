@@ -8,7 +8,7 @@ interface TenantConfig {
 @Entity('tenant_settings')
 export class TenantSettings {
   @PrimaryColumn({ type: 'char', length: 36, name: 'tenant_id' })
-  tenant_id: string;
+  tenantId: string;
 
   @Column({ type: 'json', nullable: false })
   config: TenantConfig;

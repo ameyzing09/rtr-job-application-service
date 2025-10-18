@@ -45,7 +45,10 @@ export class TenantThrottlerGuard extends ThrottlerGuard {
     return key;
   }
 
-  protected throwThrottlingException(context: ExecutionContext): void {
+  // eslint-disable-next-line @typescript-eslint/require-await
+  protected async throwThrottlingException(
+    context: ExecutionContext,
+  ): Promise<void> {
     const request = context.switchToHttp().getRequest<RequestWithTenant>();
 
     // Extract IP address (handle proxies)
