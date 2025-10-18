@@ -17,50 +17,50 @@ export class JobService {
     private jobRepository: Repository<Job>,
   ) {}
 
-  async createJob(tenant_id: string, jobPayload: Partial<Job>): Promise<Job> {
+  async createJob(tenantId: string, jobPayload: Partial<Job>): Promise<Job> {
     const job = this.jobRepository.create({
       ...jobPayload,
-      tenant_id,
+      tenantId,
     });
     return this.jobRepository.save(job);
   }
 
-  async getJobs(tenant_id: string): Promise<Job[]> {
+  async getJobs(tenantId: string): Promise<Job[]> {
     return this.jobRepository.find({
-      where: { tenant_id },
+      where: { tenantId },
       order: { created_at: 'DESC' },
     });
   }
 
-  async getJobsById(tenant_id: string, jobId: string): Promise<Job> {
+  async getJobsById(tenantId: string, jobId: string): Promise<Job> {
     const job = await this.jobRepository.findOne({
-      where: { tenant_id, id: jobId },
+      where: { tenantId, id: jobId },
     });
     if (!job)
       throw new NotFoundException(
-        `Job with ID ${jobId} not found for tenant ${tenant_id}`,
+        `Job with ID ${jobId} not found for tenant ${tenantId}`,
       );
 
     return job;
   }
 
   async updateJob(
-    tenant_id: string,
+    tenantId: string,
     jobId: string,
     updateJobPayload: UpdateJobDto,
   ): Promise<Job> {
-    const job = await this.getJobsById(tenant_id, jobId);
+    const job = await this.getJobsById(tenantId, jobId);
     Object.assign(job, updateJobPayload);
     return this.jobRepository.save(job);
   }
 
-  async deleteJob(tenant_id: string, jobId: string): Promise<void> {
-    const job = await this.getJobsById(tenant_id, jobId);
+  async deleteJob(tenantId: string, jobId: string): Promise<void> {
+    const job = await this.getJobsById(tenantId, jobId);
     await this.jobRepository.remove(job);
   }
 
-  async publishJob(tenant_id: string, jobId: string): Promise<Job> {
-    const job = await this.getJobsById(tenant_id, jobId);
+  async publishJob(tenantId: string, jobId: string): Promise<Job> {
+    const job = await this.getJobsById(tenantId, jobId);
     job.is_public = true;
     if (!job.publish_at) {
       job.publish_at = new Date();
@@ -68,8 +68,8 @@ export class JobService {
     return this.jobRepository.save(job);
   }
 
-  async unpublishJob(tenant_id: string, jobId: string): Promise<Job> {
-    const job = await this.getJobsById(tenant_id, jobId);
+  async unpublishJob(tenantId: string, jobId: string): Promise<Job> {
+    const job = await this.getJobsById(tenantId, jobId);
     job.is_public = false;
     return this.jobRepository.save(job);
   }
@@ -86,7 +86,7 @@ export class JobService {
 
     // Base filters
     query
-      .where('job.tenant_id = :tenantId', { tenantId })
+      .where('job.tenantId = :tenantId', { tenantId })
       .andWhere('job.is_public = :isPublic', { isPublic: true })
       .andWhere('job.publish_at <= :now', { now })
       .andWhere(
@@ -149,7 +149,7 @@ export class JobService {
     const job = await this.jobRepository.findOne({
       where: {
         id: jobId,
-        tenant_id: tenantId,
+        tenantId: tenantId,
       },
     });
 

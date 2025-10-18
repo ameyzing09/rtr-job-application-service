@@ -20,17 +20,17 @@ export class ApplicationsController {
     @Body() createApplicationPayload: CreateApplicationDto,
     @Req() req: Request,
   ) {
-    const tenant_id = req['tenant_id'] as string;
+    const tenantId = req['tenantId'] as string;
     return this.applicationService.createApplication(
-      tenant_id,
+      tenantId,
       createApplicationPayload,
     );
   }
 
   @Get()
   async getApplications(@Req() req: Request) {
-    const tenant_id = req['tenant_id'] as string;
-    return this.applicationService.getApplications(tenant_id);
+    const tenantId = req['tenantId'] as string;
+    return this.applicationService.getApplications(tenantId);
   }
 
   @Get(':applicationId')
@@ -38,8 +38,8 @@ export class ApplicationsController {
     @Param('applicationId') applicationId: string,
     @Req() req: Request,
   ) {
-    const tenant_id = req['tenant_id'] as string;
-    return this.applicationService.getApplicationById(tenant_id, applicationId);
+    const tenantId = req['tenantId'] as string;
+    return this.applicationService.getApplicationById(tenantId, applicationId);
   }
 
   @Put(':applicationId')
@@ -48,9 +48,9 @@ export class ApplicationsController {
     @Body() updateApplicationPayload: CreateApplicationDto,
     @Req() req: Request,
   ) {
-    const tenant_id = req['tenant_id'] as string;
+    const tenantId = req['tenantId'] as string;
     return this.applicationService.updateApplication(
-      tenant_id,
+      tenantId,
       applicationId,
       updateApplicationPayload,
     );
@@ -61,7 +61,7 @@ export class ApplicationsController {
     @Param('applicationId') applicationId: string,
     @Req() req: Request,
   ) {
-    const tenant_id = req['tenant_id'] as string;
-    return this.applicationService.deleteApplication(tenant_id, applicationId);
+    const tenantId = req['tenantId'] as string;
+    return this.applicationService.deleteApplication(tenantId, applicationId);
   }
 }

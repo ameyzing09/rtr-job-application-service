@@ -10,15 +10,15 @@ import {
 } from 'typeorm';
 
 @Entity('jobs')
-@Index('idx_jobs_tenant', ['tenant_id'])
-@Index('idx_jobs_tenant_title', ['tenant_id', 'title'])
-@Index('idx_jobs_public', ['tenant_id', 'is_public', 'publish_at'])
+@Index('idx_jobs_tenant', ['tenantId'])
+@Index('idx_jobs_tenant_title', ['tenantId', 'title'])
+@Index('idx_jobs_public', ['tenantId', 'is_public', 'publish_at'])
 export class Job {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ type: 'uuid' })
-  tenant_id: string;
+  tenantId: string;
 
   @Column()
   title: string;

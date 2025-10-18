@@ -9,6 +9,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { IsPublishBeforeExpire } from '../common/validators/date-range.validator';
+import { ValidateJobExtra } from '../common/validators/job-extra.validator';
 
 export class CreateJobDto {
   @IsString()
@@ -48,6 +49,7 @@ export class CreateJobDto {
 
   @IsObject()
   @IsOptional()
+  @ValidateJobExtra()
   extra?: Record<string, unknown>;
 }
 
@@ -89,5 +91,6 @@ export class UpdateJobDto {
 
   @IsObject()
   @IsOptional()
+  @ValidateJobExtra()
   extra?: Record<string, unknown>;
 }

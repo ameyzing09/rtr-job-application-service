@@ -232,7 +232,7 @@ When creating a job without specifying optional fields, the response includes:
 ```json
 {
   "id": "generated-uuid",
-  "tenant_id": "tenant-uuid-from-token",
+  "tenantId": "tenant-uuid-from-token",
   "title": "Senior Software Engineer",
   "description": null,
   "location": null,

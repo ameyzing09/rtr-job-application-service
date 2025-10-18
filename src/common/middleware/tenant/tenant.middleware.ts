@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
 
 interface JwtPayload {
-  tenant_id?: string;
+  tenantId?: string;
   tid?: string;
   role?: string;
   roles?: string[];
@@ -47,22 +47,22 @@ export class TenantMiddleware implements NestMiddleware {
       // Verify and decode token
       const decoded = jwt.verify(token, jwtSecret) as JwtPayload;
 
-      // Extract tenant_id from token payload
-      const tenantIdFromToken = decoded.tenant_id || decoded.tid;
+      // Extract tenantId from token payload
+      const tenantIdFromToken = decoded.tenantId || decoded.tid;
       if (!tenantIdFromToken) {
         throw new UnauthorizedException(
-          'Token does not contain tenant_id or tid',
+          'Token does not contain tenantId or tid',
         );
       }
 
-      // Verify that token's tenant_id matches header's tenant_id
+      // Verify that token's tenantId matches header's tenantId
       if (tenantIdFromToken !== tenantIdFromHeader) {
         throw new UnauthorizedException(
           'Tenant ID mismatch between token and header',
         );
       }
 
-      // Attach tenant_id to request for downstream use
+      // Attach tenantId to request for downstream use
       req['tenantId'] = tenantIdFromHeader;
       req['user'] = decoded; // Optionally attach decoded token payload
 
