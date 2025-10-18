@@ -65,7 +65,7 @@ export class TurnstileService implements ICaptchaService {
         return false;
       }
 
-      const data: TurnstileVerifyResponse = await response.json();
+      const data = (await response.json()) as TurnstileVerifyResponse;
 
       if (!data.success) {
         this.logger.warn(

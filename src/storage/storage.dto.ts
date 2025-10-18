@@ -17,10 +17,13 @@ export class PresignUploadRequestDto {
 
   @IsString()
   @IsNotEmpty()
-  @Matches(/^(application\/pdf|application\/msword|application\/vnd\.openxmlformats-officedocument\.wordprocessingml\.document)$/, {
-    message:
-      'File type not allowed. Allowed types: application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  })
+  @Matches(
+    /^(application\/pdf|application\/msword|application\/vnd\.openxmlformats-officedocument\.wordprocessingml\.document)$/,
+    {
+      message:
+        'File type not allowed. Allowed types: application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    },
+  )
   fileType: string;
 }
 

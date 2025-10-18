@@ -10,15 +10,15 @@ import {
 } from 'typeorm';
 
 @Entity('jobs')
-@Index('idx_jobs_tenant', ['tenant_id'])
-@Index('idx_jobs_tenant_title', ['tenant_id', 'title'])
-@Index('idx_jobs_public', ['tenant_id', 'is_public', 'publish_at'])
+@Index('idx_jobs_tenant', ['tenantId'])
+@Index('idx_jobs_tenant_title', ['tenantId', 'title'])
+@Index('idx_jobs_public', ['tenantId', 'isPublic', 'publishAt'])
 export class Job {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'uuid' })
-  tenant_id: string;
+  @Column({ name: 'tenant_id', type: 'uuid' })
+  tenantId: string;
 
   @Column()
   title: string;
@@ -32,26 +32,26 @@ export class Job {
   @Column({ nullable: true })
   department?: string;
 
-  @Column({ type: 'boolean', default: false })
-  is_public: boolean;
+  @Column({ name: 'is_public', type: 'boolean', default: false })
+  isPublic: boolean;
 
-  @Column({ type: 'datetime', nullable: true })
-  publish_at?: Date;
+  @Column({ name: 'publish_at', type: 'datetime', nullable: true })
+  publishAt?: Date;
 
-  @Column({ type: 'datetime', nullable: true })
-  expire_at?: Date;
+  @Column({ name: 'expire_at', type: 'datetime', nullable: true })
+  expireAt?: Date;
 
-  @Column({ length: 255, nullable: true })
-  external_apply_url?: string;
+  @Column({ name: 'external_apply_url', length: 255, nullable: true })
+  externalApplyUrl?: string;
 
   @Column({ type: 'json', nullable: true })
   extra?: Record<string, unknown>;
 
   @CreateDateColumn({ name: 'created_at' })
-  created_at: Date;
+  createdAt: Date;
 
   @UpdateDateColumn({ name: 'updated_at' })
-  updated_at: Date;
+  updatedAt: Date;
 
   @OneToMany(() => Application, (application) => application.job)
   applications: Application[];

@@ -30,22 +30,22 @@ export class CreateJobDto {
 
   @IsBoolean()
   @IsOptional()
-  is_public?: boolean;
+  isPublic?: boolean;
 
   @IsDate()
   @IsOptional()
   @Type(() => Date)
-  publish_at?: Date;
+  publishAt?: Date;
 
   @IsDate()
   @IsOptional()
   @Type(() => Date)
   @IsPublishBeforeExpire()
-  expire_at?: Date;
+  expireAt?: Date;
 
   @IsUrl()
   @IsOptional()
-  external_apply_url?: string;
+  externalApplyUrl?: string;
 
   @IsObject()
   @IsOptional()
@@ -72,22 +72,22 @@ export class UpdateJobDto {
 
   @IsBoolean()
   @IsOptional()
-  is_public?: boolean;
+  isPublic?: boolean;
 
   @IsDate()
   @IsOptional()
   @Type(() => Date)
-  publish_at?: Date;
+  publishAt?: Date;
 
   @IsDate()
   @IsOptional()
   @Type(() => Date)
   @IsPublishBeforeExpire()
-  expire_at?: Date;
+  expireAt?: Date;
 
   @IsUrl()
   @IsOptional()
-  external_apply_url?: string;
+  externalApplyUrl?: string;
 
   @IsObject()
   @IsOptional()

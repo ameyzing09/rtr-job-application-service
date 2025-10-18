@@ -12,7 +12,10 @@ import {
 import { Request } from 'express';
 import { Throttle } from '@nestjs/throttler';
 import { StorageService } from './storage.service';
-import { PresignUploadRequestDto, PresignedUrlResponseDto } from './storage.dto';
+import {
+  PresignUploadRequestDto,
+  PresignedUrlResponseDto,
+} from './storage.dto';
 import { TenantThrottlerGuard } from '../common/guards/tenant-throttler.guard';
 import { TenantResolverInterceptor } from '../common/interceptors/tenant-resolver.interceptor';
 import { ThrottleExceptionFilter } from '../common/filters/throttle-exception.filter';

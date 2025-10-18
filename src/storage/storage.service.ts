@@ -49,7 +49,8 @@ export class StorageService {
     // Replace this with actual cloud storage implementation when credentials are available
 
     const timestamp = Date.now();
-    const fileExtension = ALLOWED_FILE_TYPES[fileType as keyof typeof ALLOWED_FILE_TYPES];
+    const fileExtension =
+      ALLOWED_FILE_TYPES[fileType as keyof typeof ALLOWED_FILE_TYPES];
     const sanitizedFilename = fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
 
     // Remove existing extension and add the validated one

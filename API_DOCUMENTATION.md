@@ -71,10 +71,10 @@ Content-Type: application/json
   "description": "We are looking for an experienced backend engineer...",
   "location": "San Francisco, CA",
   "department": "Engineering",
-  "is_public": false,
-  "publish_at": "2025-11-01T00:00:00.000Z",
-  "expire_at": "2025-12-31T23:59:59.000Z",
-  "external_apply_url": "https://careers.company.com/apply/123",
+  "isPublic": false,
+  "publishAt": "2025-11-01T00:00:00.000Z",
+  "expireAt": "2025-12-31T23:59:59.000Z",
+  "externalApplyUrl": "https://careers.company.com/apply/123",
   "extra": {
     "salary_range": "$120k-180k",
     "experience_years": 5,
@@ -91,16 +91,16 @@ Content-Type: application/json
 | `description` | string | ❌ No | Detailed job description |
 | `location` | string | ❌ No | Job location |
 | `department` | string | ❌ No | Department name |
-| `is_public` | boolean | ❌ No | Whether job is publicly visible (default: false) |
-| `publish_at` | ISO 8601 date | ❌ No | When job becomes publicly visible |
-| `expire_at` | ISO 8601 date | ❌ No | When job posting expires (must be after `publish_at`) |
-| `external_apply_url` | URL | ❌ No | External application URL |
+| `isPublic` | boolean | ❌ No | Whether job is publicly visible (default: false) |
+| `publishAt` | ISO 8601 date | ❌ No | When job becomes publicly visible |
+| `expireAt` | ISO 8601 date | ❌ No | When job posting expires (must be after `publishAt`) |
+| `externalApplyUrl` | URL | ❌ No | External application URL |
 | `extra` | object | ❌ No | Tenant-specific custom fields (validated against tenant schema) |
 
 **Validation Rules:**
 - `title`: Required, non-empty string
-- `expire_at` must be after `publish_at` if both are provided
-- `external_apply_url` must be a valid URL
+- `expireAt` must be after `publishAt` if both are provided
+- `externalApplyUrl` must be a valid URL
 - `extra` is validated against tenant-specific JSON schema from `tenant_settings.config.job_fields_schema`
   - If schema doesn't exist, any valid JSON object is accepted
   - Invalid `extra` returns 400 with field-level errors
@@ -114,17 +114,17 @@ Content-Type: application/json
   "description": "We are looking for an experienced backend engineer...",
   "location": "San Francisco, CA",
   "department": "Engineering",
-  "is_public": false,
-  "publish_at": "2025-11-01T00:00:00.000Z",
-  "expire_at": "2025-12-31T23:59:59.000Z",
-  "external_apply_url": "https://careers.company.com/apply/123",
+  "isPublic": false,
+  "publishAt": "2025-11-01T00:00:00.000Z",
+  "expireAt": "2025-12-31T23:59:59.000Z",
+  "externalApplyUrl": "https://careers.company.com/apply/123",
   "extra": {
     "salary_range": "$120k-180k",
     "experience_years": 5,
     "remote_allowed": true
   },
-  "created_at": "2025-10-18T10:30:00.000Z",
-  "updated_at": "2025-10-18T10:30:00.000Z"
+  "createdAt": "2025-10-18T10:30:00.000Z",
+  "updatedAt": "2025-10-18T10:30:00.000Z"
 }
 ```
 
@@ -165,21 +165,21 @@ Authorization: Bearer <jwt-token>
     "description": "We are looking for...",
     "location": "San Francisco, CA",
     "department": "Engineering",
-    "is_public": true,
-    "publish_at": "2025-11-01T00:00:00.000Z",
-    "expire_at": "2025-12-31T23:59:59.000Z",
-    "external_apply_url": "https://careers.company.com/apply/123",
+    "isPublic": true,
+    "publishAt": "2025-11-01T00:00:00.000Z",
+    "expireAt": "2025-12-31T23:59:59.000Z",
+    "externalApplyUrl": "https://careers.company.com/apply/123",
     "extra": {
       "salary_range": "$120k-180k"
     },
-    "created_at": "2025-10-18T10:30:00.000Z",
-    "updated_at": "2025-10-18T10:30:00.000Z"
+    "createdAt": "2025-10-18T10:30:00.000Z",
+    "updatedAt": "2025-10-18T10:30:00.000Z"
   }
 ]
 ```
 
 **Notes:**
-- Returns jobs in descending order by `created_at`
+- Returns jobs in descending order by `createdAt`
 - Includes both public and private jobs
 - Only returns jobs for the authenticated tenant
 
@@ -209,13 +209,13 @@ Authorization: Bearer <jwt-token>
   "description": "We are looking for...",
   "location": "San Francisco, CA",
   "department": "Engineering",
-  "is_public": true,
-  "publish_at": "2025-11-01T00:00:00.000Z",
-  "expire_at": "2025-12-31T23:59:59.000Z",
-  "external_apply_url": null,
+  "isPublic": true,
+  "publishAt": "2025-11-01T00:00:00.000Z",
+  "expireAt": "2025-12-31T23:59:59.000Z",
+  "externalApplyUrl": null,
   "extra": null,
-  "created_at": "2025-10-18T10:30:00.000Z",
-  "updated_at": "2025-10-18T10:30:00.000Z"
+  "createdAt": "2025-10-18T10:30:00.000Z",
+  "updatedAt": "2025-10-18T10:30:00.000Z"
 }
 ```
 
@@ -255,7 +255,7 @@ All fields are optional. Only include fields you want to update.
   "description": "Updated description...",
   "location": "Remote",
   "department": "Engineering",
-  "is_public": true,
+  "isPublic": true,
   "extra": {
     "salary_range": "$130k-190k",
     "remote_allowed": true
@@ -272,16 +272,16 @@ All fields are optional. Only include fields you want to update.
   "description": "Updated description...",
   "location": "Remote",
   "department": "Engineering",
-  "is_public": true,
-  "publish_at": "2025-11-01T00:00:00.000Z",
-  "expire_at": "2025-12-31T23:59:59.000Z",
-  "external_apply_url": null,
+  "isPublic": true,
+  "publishAt": "2025-11-01T00:00:00.000Z",
+  "expireAt": "2025-12-31T23:59:59.000Z",
+  "externalApplyUrl": null,
   "extra": {
     "salary_range": "$130k-190k",
     "remote_allowed": true
   },
-  "created_at": "2025-10-18T10:30:00.000Z",
-  "updated_at": "2025-10-18T15:45:00.000Z"
+  "createdAt": "2025-10-18T10:30:00.000Z",
+  "updatedAt": "2025-10-18T15:45:00.000Z"
 }
 ```
 
@@ -354,16 +354,16 @@ Authorization: Bearer <jwt-token>
   "id": "550e8400-e29b-41d4-a716-446655440000",
   "tenantId": "123e4567-e89b-12d3-a456-426614174000",
   "title": "Senior Backend Engineer",
-  "is_public": true,
-  "publish_at": "2025-10-18T15:45:00.000Z",
-  "created_at": "2025-10-18T10:30:00.000Z",
-  "updated_at": "2025-10-18T15:45:00.000Z"
+  "isPublic": true,
+  "publishAt": "2025-10-18T15:45:00.000Z",
+  "createdAt": "2025-10-18T10:30:00.000Z",
+  "updatedAt": "2025-10-18T15:45:00.000Z"
 }
 ```
 
 **Notes:**
-- Sets `is_public` to `true`
-- If `publish_at` is not already set, it will be set to the current timestamp
+- Sets `isPublic` to `true`
+- If `publishAt` is not already set, it will be set to the current timestamp
 - Job becomes immediately visible in public job listings
 
 **Error Response:** `403 Forbidden`
@@ -402,15 +402,15 @@ Authorization: Bearer <jwt-token>
   "id": "550e8400-e29b-41d4-a716-446655440000",
   "tenantId": "123e4567-e89b-12d3-a456-426614174000",
   "title": "Senior Backend Engineer",
-  "is_public": false,
-  "publish_at": "2025-10-18T15:45:00.000Z",
-  "created_at": "2025-10-18T10:30:00.000Z",
-  "updated_at": "2025-10-18T16:00:00.000Z"
+  "isPublic": false,
+  "publishAt": "2025-10-18T15:45:00.000Z",
+  "createdAt": "2025-10-18T10:30:00.000Z",
+  "updatedAt": "2025-10-18T16:00:00.000Z"
 }
 ```
 
 **Notes:**
-- Sets `is_public` to `false`
+- Sets `isPublic` to `false`
 - Job is removed from public job listings
 - Existing applications are not affected
 
@@ -457,8 +457,8 @@ Host: acmecorp.yourdomain.com
       "department": "Engineering",
       "location": "San Francisco, CA",
       "description_excerpt": "We are looking for an experienced backend engineer to join our growing team. You will be working...",
-      "publish_at": "2025-11-01T00:00:00.000Z",
-      "updated_at": "2025-10-18T10:30:00.000Z",
+      "publishAt": "2025-11-01T00:00:00.000Z",
+      "updatedAt": "2025-10-18T10:30:00.000Z",
       "extra": {
         "salary_range": "$120k-180k",
         "remote_allowed": true
@@ -470,8 +470,8 @@ Host: acmecorp.yourdomain.com
       "department": "Engineering",
       "location": "Remote",
       "description_excerpt": "Join our frontend team to build amazing user experiences...",
-      "publish_at": "2025-10-15T00:00:00.000Z",
-      "updated_at": "2025-10-15T09:00:00.000Z",
+      "publishAt": "2025-10-15T00:00:00.000Z",
+      "updatedAt": "2025-10-15T09:00:00.000Z",
       "extra": null
     }
   ],
@@ -484,10 +484,10 @@ Host: acmecorp.yourdomain.com
 - `total`: Total number of matching jobs (for pagination)
 
 **Filtering Logic:**
-- Only jobs with `is_public = true` are returned
-- Only jobs where `publish_at <= current_time` are returned
-- Jobs with `expire_at < current_time` are excluded
-- Jobs are ordered by `publish_at` descending (newest first)
+- Only jobs with `isPublic = true` are returned
+- Only jobs where `publishAt <= current_time` are returned
+- Jobs with `expireAt < current_time` are excluded
+- Jobs are ordered by `publishAt` descending (newest first)
 
 **Error Response:** `400 Bad Request`
 ```json
@@ -531,8 +531,8 @@ Host: <tenant-subdomain>.yourdomain.com
   "department": "Engineering",
   "location": "San Francisco, CA",
   "description": "We are looking for an experienced backend engineer to join our growing team. You will be working on scalable microservices...",
-  "publish_at": "2025-11-01T00:00:00.000Z",
-  "updated_at": "2025-10-18T10:30:00.000Z",
+  "publishAt": "2025-11-01T00:00:00.000Z",
+  "updatedAt": "2025-10-18T10:30:00.000Z",
   "extra": {
     "salary_range": "$120k-180k",
     "experience_years": 5,
@@ -555,9 +555,9 @@ Host: <tenant-subdomain>.yourdomain.com
 ```
 
 **Notes:**
-- Returns 404 if job is not public (`is_public = false`)
-- Returns 404 if job is not yet published (`publish_at > current_time`)
-- Returns 404 if job is expired (`expire_at < current_time`)
+- Returns 404 if job is not public (`isPublic = false`)
+- Returns 404 if job is not yet published (`publishAt > current_time`)
+- Returns 404 if job is expired (`expireAt < current_time`)
 
 ---
 
@@ -608,15 +608,15 @@ Content-Type: application/json
 {
   "id": "770e8400-e29b-41d4-a716-446655440002",
   "tenantId": "123e4567-e89b-12d3-a456-426614174000",
-  "job_id": "550e8400-e29b-41d4-a716-446655440000",
-  "applicant_name": "John Doe",
-  "applicant_email": "john.doe@example.com",
-  "applicant_phone": "+1-555-0100",
-  "resume_url": "https://storage.example.com/resumes/john-doe.pdf",
-  "cover_letter": "I am excited to apply for this position...",
+  "jobId": "550e8400-e29b-41d4-a716-446655440000",
+  "applicantName": "John Doe",
+  "applicantEmail": "john.doe@example.com",
+  "applicantPhone": "+1-555-0100",
+  "resumeUrl": "https://storage.example.com/resumes/john-doe.pdf",
+  "coverLetter": "I am excited to apply for this position...",
   "status": "PENDING",
-  "created_at": "2025-10-18T11:00:00.000Z",
-  "updated_at": "2025-10-18T11:00:00.000Z"
+  "createdAt": "2025-10-18T11:00:00.000Z",
+  "updatedAt": "2025-10-18T11:00:00.000Z"
 }
 ```
 
@@ -640,15 +640,15 @@ Authorization: Bearer <jwt-token>
   {
     "id": "770e8400-e29b-41d4-a716-446655440002",
     "tenantId": "123e4567-e89b-12d3-a456-426614174000",
-    "job_id": "550e8400-e29b-41d4-a716-446655440000",
-    "applicant_name": "John Doe",
-    "applicant_email": "john.doe@example.com",
-    "applicant_phone": "+1-555-0100",
-    "resume_url": "https://storage.example.com/resumes/john-doe.pdf",
-    "cover_letter": "I am excited to apply...",
+    "jobId": "550e8400-e29b-41d4-a716-446655440000",
+    "applicantName": "John Doe",
+    "applicantEmail": "john.doe@example.com",
+    "applicantPhone": "+1-555-0100",
+    "resumeUrl": "https://storage.example.com/resumes/john-doe.pdf",
+    "coverLetter": "I am excited to apply...",
     "status": "PENDING",
-    "created_at": "2025-10-18T11:00:00.000Z",
-    "updated_at": "2025-10-18T11:00:00.000Z"
+    "createdAt": "2025-10-18T11:00:00.000Z",
+    "updatedAt": "2025-10-18T11:00:00.000Z"
   }
 ]
 ```
@@ -675,15 +675,15 @@ Authorization: Bearer <jwt-token>
 {
   "id": "770e8400-e29b-41d4-a716-446655440002",
   "tenantId": "123e4567-e89b-12d3-a456-426614174000",
-  "job_id": "550e8400-e29b-41d4-a716-446655440000",
-  "applicant_name": "John Doe",
-  "applicant_email": "john.doe@example.com",
-  "applicant_phone": "+1-555-0100",
-  "resume_url": "https://storage.example.com/resumes/john-doe.pdf",
-  "cover_letter": "I am excited to apply...",
+  "jobId": "550e8400-e29b-41d4-a716-446655440000",
+  "applicantName": "John Doe",
+  "applicantEmail": "john.doe@example.com",
+  "applicantPhone": "+1-555-0100",
+  "resumeUrl": "https://storage.example.com/resumes/john-doe.pdf",
+  "coverLetter": "I am excited to apply...",
   "status": "REVIEWED",
-  "created_at": "2025-10-18T11:00:00.000Z",
-  "updated_at": "2025-10-18T14:30:00.000Z"
+  "createdAt": "2025-10-18T11:00:00.000Z",
+  "updatedAt": "2025-10-18T14:30:00.000Z"
 }
 ```
 
@@ -729,15 +729,15 @@ All fields are optional.
 {
   "id": "770e8400-e29b-41d4-a716-446655440002",
   "tenantId": "123e4567-e89b-12d3-a456-426614174000",
-  "job_id": "550e8400-e29b-41d4-a716-446655440000",
-  "applicant_name": "John M. Doe",
-  "applicant_email": "john.doe@example.com",
-  "applicant_phone": "+1-555-0100",
-  "resume_url": "https://storage.example.com/resumes/john-doe.pdf",
-  "cover_letter": "I am excited to apply...",
+  "jobId": "550e8400-e29b-41d4-a716-446655440000",
+  "applicantName": "John M. Doe",
+  "applicantEmail": "john.doe@example.com",
+  "applicantPhone": "+1-555-0100",
+  "resumeUrl": "https://storage.example.com/resumes/john-doe.pdf",
+  "coverLetter": "I am excited to apply...",
   "status": "REVIEWED",
-  "created_at": "2025-10-18T11:00:00.000Z",
-  "updated_at": "2025-10-18T14:30:00.000Z"
+  "createdAt": "2025-10-18T11:00:00.000Z",
+  "updatedAt": "2025-10-18T14:30:00.000Z"
 }
 ```
 
@@ -802,12 +802,12 @@ Content-Type: application/json
 **Request Body:**
 ```json
 {
-  "job_id": "550e8400-e29b-41d4-a716-446655440000",
-  "applicant_name": "Jane Smith",
-  "applicant_email": "jane.smith@example.com",
-  "applicant_phone": "+1-555-0200",
-  "resume_url": "https://storage.example.com/resumes/jane-smith.pdf",
-  "cover_letter": "I am passionate about this role...",
+  "jobId": "550e8400-e29b-41d4-a716-446655440000",
+  "applicantName": "Jane Smith",
+  "applicantEmail": "jane.smith@example.com",
+  "applicantPhone": "+1-555-0200",
+  "resumeUrl": "https://storage.example.com/resumes/jane-smith.pdf",
+  "coverLetter": "I am passionate about this role...",
   "captcha_token": "0.ABC123...XYZ"
 }
 ```
@@ -843,7 +843,7 @@ Content-Type: application/json
 {
   "statusCode": 400,
   "message": [
-    "applicant_email must be an email"
+    "applicantEmail must be an email"
   ],
   "error": "Bad Request"
 }
@@ -911,7 +911,7 @@ All errors follow this structure:
   "statusCode": 400,
   "message": [
     "title should not be empty",
-    "expire_at must be after publish_at",
+    "expireAt must be after publishAt",
     "extra: missing required property 'salary_range'"
   ],
   "error": "Bad Request"
@@ -926,19 +926,19 @@ All errors follow this structure:
 
 ```typescript
 {
-  id: string;                           // UUID
-  tenantId: string;                     // UUID
-  title: string;                        // Required
-  description?: string | null;          // Optional
-  location?: string | null;             // Optional
-  department?: string | null;           // Optional
-  is_public: boolean;                   // Default: false
-  publish_at?: Date | null;             // ISO 8601 timestamp
-  expire_at?: Date | null;              // ISO 8601 timestamp
-  external_apply_url?: string | null;   // URL or null
+  id: string;                             // UUID
+  tenantId: string;                       // UUID
+  title: string;                          // Required
+  description?: string | null;            // Optional
+  location?: string | null;               // Optional
+  department?: string | null;             // Optional
+  isPublic: boolean;                      // Default: false
+  publishAt?: Date | null;                // ISO 8601 timestamp
+  expireAt?: Date | null;                 // ISO 8601 timestamp
+  externalApplyUrl?: string | null;       // URL or null
   extra?: Record<string, unknown> | null; // Tenant-specific JSON
-  created_at: Date;                     // ISO 8601 timestamp
-  updated_at: Date;                     // ISO 8601 timestamp
+  createdAt: Date;                        // ISO 8601 timestamp
+  updatedAt: Date;                        // ISO 8601 timestamp
 }
 ```
 
@@ -948,15 +948,15 @@ All errors follow this structure:
 {
   id: string;                    // UUID
   tenantId: string;              // UUID
-  job_id: string;                // UUID (foreign key to Job)
-  applicant_name: string;        // Required
-  applicant_email: string;       // Required
-  applicant_phone?: string | null; // Optional
-  resume_url?: string | null;    // URL or null
-  cover_letter?: string | null;  // Optional text
+  jobId: string;                 // UUID (foreign key to Job)
+  applicantName: string;         // Required
+  applicantEmail: string;        // Required
+  applicantPhone?: string | null; // Optional
+  resumeUrl?: string | null;     // URL or null
+  coverLetter?: string | null;   // Optional text
   status: 'PENDING' | 'REVIEWED' | 'REJECTED' | 'HIRED'; // Enum
-  created_at: Date;              // ISO 8601 timestamp
-  updated_at: Date;              // ISO 8601 timestamp
+  createdAt: Date;               // ISO 8601 timestamp
+  updatedAt: Date;               // ISO 8601 timestamp
 }
 ```
 
@@ -969,8 +969,8 @@ All errors follow this structure:
   department?: string;
   location?: string;
   description_excerpt: string;    // First 100 chars of description
-  publish_at: Date;               // ISO 8601 timestamp
-  updated_at: Date;               // ISO 8601 timestamp
+  publish_at: Date;               // ISO 8601 timestamp (kept as snake_case for API response)
+  updated_at: Date;               // ISO 8601 timestamp (kept as snake_case for API response)
   extra?: Record<string, unknown> | null;
 }
 ```
@@ -984,8 +984,8 @@ All errors follow this structure:
   department?: string;
   location?: string;
   description?: string;           // Full description
-  publish_at: Date;               // ISO 8601 timestamp
-  updated_at: Date;               // ISO 8601 timestamp
+  publish_at: Date;               // ISO 8601 timestamp (kept as snake_case for API response)
+  updated_at: Date;               // ISO 8601 timestamp (kept as snake_case for API response)
   extra?: Record<string, unknown> | null;
 }
 ```

@@ -32,5 +32,5 @@ export class CreatePublicApplicationDto {
 
 export interface PublicApplicationResponseDto {
   id: string;
-  status: string;
+  status: 'PENDING' | 'REVIEWED' | 'REJECTED' | 'HIRED';
 }

@@ -64,7 +64,7 @@ export class HCaptchaService implements ICaptchaService {
         return false;
       }
 
-      const data: HCaptchaVerifyResponse = await response.json();
+      const data = (await response.json()) as HCaptchaVerifyResponse;
 
       if (!data.success) {
         this.logger.warn(

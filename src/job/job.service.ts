@@ -28,7 +28,7 @@ export class JobService {
   async getJobs(tenantId: string): Promise<Job[]> {
     return this.jobRepository.find({
       where: { tenantId },
-      order: { created_at: 'DESC' },
+      order: { createdAt: 'DESC' },
     });
   }
 
@@ -61,16 +61,16 @@ export class JobService {
 
   async publishJob(tenantId: string, jobId: string): Promise<Job> {
     const job = await this.getJobsById(tenantId, jobId);
-    job.is_public = true;
-    if (!job.publish_at) {
-      job.publish_at = new Date();
+    job.isPublic = true;
+    if (!job.publishAt) {
+      job.publishAt = new Date();
     }
     return this.jobRepository.save(job);
   }
 
   async unpublishJob(tenantId: string, jobId: string): Promise<Job> {
     const job = await this.getJobsById(tenantId, jobId);
-    job.is_public = false;
+    job.isPublic = false;
     return this.jobRepository.save(job);
   }
 
@@ -87,11 +87,11 @@ export class JobService {
     // Base filters
     query
       .where('job.tenantId = :tenantId', { tenantId })
-      .andWhere('job.is_public = :isPublic', { isPublic: true })
-      .andWhere('job.publish_at <= :now', { now })
+      .andWhere('job.isPublic = :isPublic', { isPublic: true })
+      .andWhere('job.publishAt <= :now', { now })
       .andWhere(
         new Brackets((qb) => {
-          qb.where('job.expire_at IS NULL').orWhere('job.expire_at >= :now', {
+          qb.where('job.expireAt IS NULL').orWhere('job.expireAt >= :now', {
             now,
           });
         }),
@@ -121,7 +121,7 @@ export class JobService {
     }
 
     // Ordering and pagination
-    query.orderBy('job.publish_at', 'DESC').skip(skip).take(pageSize);
+    query.orderBy('job.publishAt', 'DESC').skip(skip).take(pageSize);
 
     const [jobs, total] = await query.getManyAndCount();
 
@@ -132,8 +132,8 @@ export class JobService {
       department: job.department,
       location: job.location,
       description_excerpt: this.createDescriptionExcerpt(job.description),
-      publish_at: job.publish_at as Date,
-      updated_at: job.updated_at,
+      publish_at: job.publishAt as Date,
+      updated_at: job.updatedAt,
       extra: job.extra,
     }));
 
@@ -158,15 +158,15 @@ export class JobService {
       throw new NotFoundException(`Job with ID ${jobId} not found`);
     }
 
-    if (!job.is_public) {
+    if (!job.isPublic) {
       throw new NotFoundException(`Job with ID ${jobId} not found`);
     }
 
-    if (!job.publish_at || job.publish_at > now) {
+    if (!job.publishAt || job.publishAt > now) {
       throw new NotFoundException(`Job with ID ${jobId} not found`);
     }
 
-    if (job.expire_at && job.expire_at < now) {
+    if (job.expireAt && job.expireAt < now) {
       throw new NotFoundException(`Job with ID ${jobId} not found`);
     }
 
@@ -177,8 +177,8 @@ export class JobService {
       department: job.department,
       location: job.location,
       description: job.description,
-      publish_at: job.publish_at,
-      updated_at: job.updated_at,
+      publish_at: job.publishAt,
+      updated_at: job.updatedAt,
       extra: job.extra,
     };
   }

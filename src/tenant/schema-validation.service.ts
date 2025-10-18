@@ -111,13 +111,10 @@ export class SchemaValidationService {
         return this.PERMISSIVE_SCHEMA;
       }
 
-      return jobFieldsSchema as Record<string, unknown>;
+      return jobFieldsSchema;
     } catch (error) {
       // On error, fall back to permissive schema
-      console.error(
-        `Failed to fetch schema for tenant ${tenantId}:`,
-        error,
-      );
+      console.error(`Failed to fetch schema for tenant ${tenantId}:`, error);
       return this.PERMISSIVE_SCHEMA;
     }
   }

@@ -40,7 +40,7 @@ export class ApplicationsService {
     const application = this.applicationRepository.create({
       ...createApplicationPayload,
       tenantId: tenantId,
-      job_id: job.id,
+      jobId: job.id,
     });
     return this.applicationRepository.save(application);
   }
@@ -48,7 +48,7 @@ export class ApplicationsService {
   async getApplications(tenantId: string) {
     return this.applicationRepository.find({
       where: { tenantId: tenantId },
-      order: { created_at: 'DESC' },
+      order: { createdAt: 'DESC' },
     });
   }
 
@@ -100,21 +100,21 @@ export class ApplicationsService {
     }
 
     // Validate job is public
-    if (!job.is_public) {
+    if (!job.isPublic) {
       throw new BadRequestException(
         'Job not found or not available for applications',
       );
     }
 
     // Validate job is published
-    if (!job.publish_at || job.publish_at > now) {
+    if (!job.publishAt || job.publishAt > now) {
       throw new BadRequestException(
         'Job not found or not available for applications',
       );
     }
 
     // Validate job is not expired
-    if (job.expire_at && job.expire_at < now) {
+    if (job.expireAt && job.expireAt < now) {
       throw new BadRequestException(
         'Job not found or not available for applications',
       );
@@ -123,20 +123,26 @@ export class ApplicationsService {
     // Create application with PENDING status
     const application = this.applicationRepository.create({
       tenantId: tenantId,
-      job_id: applicationData.job_id,
-      applicant_name: applicationData.applicant_name,
-      applicant_email: applicationData.applicant_email,
-      applicant_phone: applicationData.applicant_phone,
-      resume_url: applicationData.resume_url,
-      cover_letter: applicationData.cover_letter,
+      jobId: applicationData.job_id,
+      applicantName: applicationData.applicant_name,
+      applicantEmail: applicationData.applicant_email,
+      applicantPhone: applicationData.applicant_phone,
+      resumeUrl: applicationData.resume_url,
+      coverLetter: applicationData.cover_letter,
       status: 'PENDING',
     });
 
     const savedApplication = await this.applicationRepository.save(application);
 
-    return {
-      id: savedApplication.id,
-      status: savedApplication.status,
+    const id: string = savedApplication.id;
+    const status: 'PENDING' | 'REVIEWED' | 'REJECTED' | 'HIRED' =
+      savedApplication.status;
+
+    const result: PublicApplicationResponseDto = {
+      id,
+      status,
     };
+
+    return result;
   }
 }

@@ -11,7 +11,9 @@ import { SchemaValidationService } from '../../tenant/schema-validation.service'
 
 @ValidatorConstraint({ name: 'ValidateJobExtra', async: true })
 @Injectable({ scope: Scope.REQUEST })
-export class ValidateJobExtraConstraint implements ValidatorConstraintInterface {
+export class ValidateJobExtraConstraint
+  implements ValidatorConstraintInterface
+{
   constructor(
     private readonly schemaValidationService: SchemaValidationService,
     @Inject(REQUEST) private readonly request: Record<string, unknown>,
@@ -19,7 +21,7 @@ export class ValidateJobExtraConstraint implements ValidatorConstraintInterface 
 
   async validate(
     value: Record<string, unknown> | undefined,
-    args: ValidationArguments,
+    _args: ValidationArguments,
   ): Promise<boolean> {
     // Get tenantId from the request (set by TenantMiddleware)
     const tenantId = this.request['tenantId'] as string;
@@ -44,7 +46,7 @@ export class ValidateJobExtraConstraint implements ValidatorConstraintInterface 
     return result.valid;
   }
 
-  defaultMessage(args: ValidationArguments): string {
+  defaultMessage(_args: ValidationArguments): string {
     const errors = (this as Record<string, unknown>)['lastErrors'];
     if (Array.isArray(errors) && errors.length > 0) {
       return errors.join('; ');

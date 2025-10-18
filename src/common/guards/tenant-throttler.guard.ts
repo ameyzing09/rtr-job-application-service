@@ -1,6 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ThrottlerGuard, ThrottlerException } from '@nestjs/throttler';
 import { ExecutionContext } from '@nestjs/common';
+import { Request } from 'express';
+
+interface RequestWithTenant extends Request {
+  tenantId?: string;
+}
 
 /**
  * Custom throttler guard that tracks rate limits per IP + Tenant combination.
@@ -16,18 +21,23 @@ export class TenantThrottlerGuard extends ThrottlerGuard {
     suffix: string,
     name: string,
   ): string {
-    const request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<RequestWithTenant>();
 
     // Extract IP address (handle proxies)
-    const ip =
-      request.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
-      request.headers['x-real-ip'] ||
-      request.connection?.remoteAddress ||
-      request.socket?.remoteAddress ||
-      'unknown';
+    const forwardedFor = request.headers['x-forwarded-for'];
+    const xRealIp = request.headers['x-real-ip'];
+
+    let ip = 'unknown';
+    if (typeof forwardedFor === 'string') {
+      ip = forwardedFor.split(',')[0]?.trim() || 'unknown';
+    } else if (typeof xRealIp === 'string') {
+      ip = xRealIp;
+    } else if (request.socket?.remoteAddress) {
+      ip = request.socket.remoteAddress;
+    }
 
     // Extract tenant ID (should be set by interceptor before guard runs)
-    const tenantId = request['tenantId'] || 'no-tenant';
+    const tenantId = request.tenantId || 'no-tenant';
 
     // Combine IP + tenant for unique tracking key
     const key = `${ip}:${tenantId}:${name}:${suffix}`;
@@ -35,16 +45,23 @@ export class TenantThrottlerGuard extends ThrottlerGuard {
     return key;
   }
 
-  protected async throwThrottlingException(
-    context: ExecutionContext,
-  ): Promise<void> {
-    const request = context.switchToHttp().getRequest();
-    const ip =
-      request.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
-      request.headers['x-real-ip'] ||
-      request.connection?.remoteAddress ||
-      'unknown';
-    const tenantId = request['tenantId'] || 'no-tenant';
+  protected throwThrottlingException(context: ExecutionContext): void {
+    const request = context.switchToHttp().getRequest<RequestWithTenant>();
+
+    // Extract IP address (handle proxies)
+    const forwardedFor = request.headers['x-forwarded-for'];
+    const xRealIp = request.headers['x-real-ip'];
+
+    let ip = 'unknown';
+    if (typeof forwardedFor === 'string') {
+      ip = forwardedFor.split(',')[0]?.trim() || 'unknown';
+    } else if (typeof xRealIp === 'string') {
+      ip = xRealIp;
+    } else if (request.socket?.remoteAddress) {
+      ip = request.socket.remoteAddress;
+    }
+
+    const tenantId = request.tenantId || 'no-tenant';
 
     // Log rate limit exceeded event
     this.logger.warn(

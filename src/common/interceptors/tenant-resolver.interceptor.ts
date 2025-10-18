@@ -7,8 +7,15 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
+import { Request } from 'express';
 import { TenantService } from '../../tenant/tenant.service';
+import { Tenant } from '../../tenant/tenant.entity';
 import { extractSubdomain } from '../utils/subdomain.util';
+
+interface RequestWithTenant extends Request {
+  tenantId?: string;
+  tenant?: Tenant;
+}
 
 /**
  * Interceptor that resolves tenant from subdomain and attaches to request.
@@ -22,11 +29,11 @@ export class TenantResolverInterceptor implements NestInterceptor {
     context: ExecutionContext,
     next: CallHandler,
   ): Promise<Observable<unknown>> {
-    const request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<RequestWithTenant>();
 
     // Extract subdomain from host header
     const host = request.headers.host;
-    if (!host) {
+    if (!host || typeof host !== 'string') {
       throw new BadRequestException('Host header is missing');
     }
 
@@ -42,8 +49,8 @@ export class TenantResolverInterceptor implements NestInterceptor {
     }
 
     // Attach tenant to request for downstream use
-    request['tenantId'] = tenant.id;
-    request['tenant'] = tenant;
+    request.tenantId = tenant.id;
+    request.tenant = tenant;
 
     return next.handle();
   }

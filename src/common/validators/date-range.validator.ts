@@ -7,8 +7,8 @@ import {
 } from 'class-validator';
 
 interface DateRangeObject {
-  publish_at?: Date;
-  expire_at?: Date;
+  publishAt?: Date;
+  expireAt?: Date;
 }
 
 @ValidatorConstraint({ name: 'isPublishBeforeExpire', async: false })
@@ -17,19 +17,19 @@ export class IsPublishBeforeExpireConstraint
 {
   validate(expireAt: Date | undefined, args: ValidationArguments): boolean {
     const obj = args.object as DateRangeObject;
-    const publishAt = obj.publish_at;
+    const publishAt = obj.publishAt;
 
     // If either date is missing, skip validation (handled by @IsOptional)
     if (!publishAt || !expireAt) {
       return true;
     }
 
-    // Ensure publish_at is before expire_at
+    // Ensure publishAt is before expireAt
     return publishAt < expireAt;
   }
 
-  defaultMessage(args: ValidationArguments): string {
-    return 'publish_at must be before expire_at';
+  defaultMessage(_args: ValidationArguments): string {
+    return 'publishAt must be before expireAt';
   }
 }
 
