@@ -17,60 +17,77 @@ export class JobService {
     private jobRepository: Repository<Job>,
   ) {}
 
-  async createJob(tenant_id: string, jobPayload: Partial<Job>): Promise<Job> {
+  async createJob(tenantId: string, jobPayload: Partial<Job>): Promise<Job> {
     const job = this.jobRepository.create({
       ...jobPayload,
-      tenant_id,
+      tenantId,
     });
     return this.jobRepository.save(job);
   }
 
-  async getJobs(tenant_id: string): Promise<Job[]> {
+  async getJobs(tenantId: string): Promise<Job[]> {
     return this.jobRepository.find({
-      where: { tenant_id },
-      order: { created_at: 'DESC' },
+      where: { tenantId },
+      order: { createdAt: 'DESC' },
     });
   }
 
-  async getJobsById(tenant_id: string, jobId: string): Promise<Job> {
+  async getJobsById(tenantId: string, jobId: string): Promise<Job> {
     const job = await this.jobRepository.findOne({
-      where: { tenant_id, id: jobId },
+      where: { tenantId, id: jobId },
     });
     if (!job)
       throw new NotFoundException(
-        `Job with ID ${jobId} not found for tenant ${tenant_id}`,
+        `Job with ID ${jobId} not found for tenant ${tenantId}`,
       );
 
     return job;
   }
 
   async updateJob(
-    tenant_id: string,
+    tenantId: string,
     jobId: string,
     updateJobPayload: UpdateJobDto,
   ): Promise<Job> {
-    const job = await this.getJobsById(tenant_id, jobId);
-    Object.assign(job, updateJobPayload);
-    return this.jobRepository.save(job);
+    const job = await this.getJobsById(tenantId, jobId);
+
+    // Only assign defined values to avoid overwriting with undefined
+    // Exclude relation fields and system fields that shouldn't be updated
+    const excludedFields = new Set(['applications', 'createdAt', 'updatedAt', 'id', 'tenantId']);
+    const updates: Record<string, unknown> = {};
+    for (const key of Object.keys(updateJobPayload) as (keyof UpdateJobDto)[]) {
+      if (excludedFields.has(key as string)) {
+        continue;
+      }
+      const value = updateJobPayload[key];
+      if (value !== undefined) {
+        updates[key] = value;
+      }
+    }
+    Object.assign(job, updates);
+
+    const updateResponse = await this.jobRepository.save(job);
+    console.log('Updated Job:', updateResponse);
+    return updateResponse;
   }
 
-  async deleteJob(tenant_id: string, jobId: string): Promise<void> {
-    const job = await this.getJobsById(tenant_id, jobId);
+  async deleteJob(tenantId: string, jobId: string): Promise<void> {
+    const job = await this.getJobsById(tenantId, jobId);
     await this.jobRepository.remove(job);
   }
 
-  async publishJob(tenant_id: string, jobId: string): Promise<Job> {
-    const job = await this.getJobsById(tenant_id, jobId);
-    job.is_public = true;
-    if (!job.publish_at) {
-      job.publish_at = new Date();
+  async publishJob(tenantId: string, jobId: string): Promise<Job> {
+    const job = await this.getJobsById(tenantId, jobId);
+    job.isPublic = true;
+    if (!job.publishAt) {
+      job.publishAt = new Date();
     }
     return this.jobRepository.save(job);
   }
 
-  async unpublishJob(tenant_id: string, jobId: string): Promise<Job> {
-    const job = await this.getJobsById(tenant_id, jobId);
-    job.is_public = false;
+  async unpublishJob(tenantId: string, jobId: string): Promise<Job> {
+    const job = await this.getJobsById(tenantId, jobId);
+    job.isPublic = false;
     return this.jobRepository.save(job);
   }
 
@@ -86,12 +103,12 @@ export class JobService {
 
     // Base filters
     query
-      .where('job.tenant_id = :tenantId', { tenantId })
-      .andWhere('job.is_public = :isPublic', { isPublic: true })
-      .andWhere('job.publish_at <= :now', { now })
+      .where('job.tenantId = :tenantId', { tenantId })
+      .andWhere('job.isPublic = :isPublic', { isPublic: true })
+      .andWhere('job.publishAt <= :now', { now })
       .andWhere(
         new Brackets((qb) => {
-          qb.where('job.expire_at IS NULL').orWhere('job.expire_at >= :now', {
+          qb.where('job.expireAt IS NULL').orWhere('job.expireAt >= :now', {
             now,
           });
         }),
@@ -121,7 +138,7 @@ export class JobService {
     }
 
     // Ordering and pagination
-    query.orderBy('job.publish_at', 'DESC').skip(skip).take(pageSize);
+    query.orderBy('job.publishAt', 'DESC').skip(skip).take(pageSize);
 
     const [jobs, total] = await query.getManyAndCount();
 
@@ -132,8 +149,8 @@ export class JobService {
       department: job.department,
       location: job.location,
       description_excerpt: this.createDescriptionExcerpt(job.description),
-      publish_at: job.publish_at as Date,
-      updated_at: job.updated_at,
+      publish_at: job.publishAt as Date,
+      updated_at: job.updatedAt,
       extra: job.extra,
     }));
 
@@ -149,7 +166,7 @@ export class JobService {
     const job = await this.jobRepository.findOne({
       where: {
         id: jobId,
-        tenant_id: tenantId,
+        tenantId: tenantId,
       },
     });
 
@@ -158,15 +175,15 @@ export class JobService {
       throw new NotFoundException(`Job with ID ${jobId} not found`);
     }
 
-    if (!job.is_public) {
+    if (!job.isPublic) {
       throw new NotFoundException(`Job with ID ${jobId} not found`);
     }
 
-    if (!job.publish_at || job.publish_at > now) {
+    if (!job.publishAt || job.publishAt > now) {
       throw new NotFoundException(`Job with ID ${jobId} not found`);
     }
 
-    if (job.expire_at && job.expire_at < now) {
+    if (job.expireAt && job.expireAt < now) {
       throw new NotFoundException(`Job with ID ${jobId} not found`);
     }
 
@@ -177,8 +194,8 @@ export class JobService {
       department: job.department,
       location: job.location,
       description: job.description,
-      publish_at: job.publish_at,
-      updated_at: job.updated_at,
+      publish_at: job.publishAt,
+      updated_at: job.updatedAt,
       extra: job.extra,
     };
   }

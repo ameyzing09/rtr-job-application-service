@@ -7,8 +7,9 @@ import {
   IsString,
   IsUrl,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { IsPublishBeforeExpire } from '../common/validators/date-range.validator';
+import { ValidateJobExtra } from '../common/validators/job-extra.validator';
 
 export class CreateJobDto {
   @IsString()
@@ -29,25 +30,29 @@ export class CreateJobDto {
 
   @IsBoolean()
   @IsOptional()
-  is_public?: boolean;
+  isPublic?: boolean;
 
   @IsDate()
   @IsOptional()
   @Type(() => Date)
-  publish_at?: Date;
+  publishAt?: Date;
 
   @IsDate()
   @IsOptional()
   @Type(() => Date)
   @IsPublishBeforeExpire()
-  expire_at?: Date;
+  expireAt?: Date;
 
   @IsUrl()
   @IsOptional()
-  external_apply_url?: string;
+  @Transform(({ value }: { value: string }) => (value === '' ? null : value), {
+    toClassOnly: true,
+  })
+  externalApplyUrl?: string;
 
   @IsObject()
   @IsOptional()
+  @ValidateJobExtra()
   extra?: Record<string, unknown>;
 }
 
@@ -70,24 +75,28 @@ export class UpdateJobDto {
 
   @IsBoolean()
   @IsOptional()
-  is_public?: boolean;
+  isPublic?: boolean;
 
   @IsDate()
   @IsOptional()
   @Type(() => Date)
-  publish_at?: Date;
+  publishAt?: Date;
 
   @IsDate()
   @IsOptional()
   @Type(() => Date)
   @IsPublishBeforeExpire()
-  expire_at?: Date;
+  expireAt?: Date;
 
   @IsUrl()
   @IsOptional()
-  external_apply_url?: string;
+  @Transform(({ value }: { value: string }) => (value === '' ? null : value), {
+    toClassOnly: true,
+  })
+  externalApplyUrl?: string;
 
   @IsObject()
   @IsOptional()
+  @ValidateJobExtra()
   extra?: Record<string, unknown>;
 }

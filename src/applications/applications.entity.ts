@@ -11,33 +11,33 @@ import {
 } from 'typeorm';
 
 @Entity('applications')
-@Index('idx_app_tenant', ['tenant_id'])
-@Index('idx_app_job', ['job_id'])
-@Index('idx_app_tenant_status', ['tenant_id', 'status'])
+@Index('idx_app_tenant', ['tenantId'])
+@Index('idx_app_job', ['jobId'])
+@Index('idx_app_tenant_status', ['tenantId', 'status'])
 export class Application {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'uuid' })
-  tenant_id: string;
+  @Column({ name: 'tenant_id', type: 'uuid' })
+  tenantId: string;
 
   @Column({ name: 'job_id', type: 'uuid' })
-  job_id: string;
+  jobId: string;
 
-  @Column()
-  applicant_name: string;
+  @Column({ name: 'applicant_name' })
+  applicantName: string;
 
-  @Column()
-  applicant_email: string;
+  @Column({ name: 'applicant_email' })
+  applicantEmail: string;
 
-  @Column({ nullable: true })
-  applicant_phone?: string;
+  @Column({ name: 'applicant_phone', nullable: true })
+  applicantPhone?: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  resume_url?: string;
+  @Column({ name: 'resume_url', type: 'varchar', length: 255, nullable: true })
+  resumeUrl?: string;
 
-  @Column({ type: 'text', nullable: true })
-  cover_letter?: string;
+  @Column({ name: 'cover_letter', type: 'text', nullable: true })
+  coverLetter?: string;
 
   @Column({
     type: 'enum',
@@ -47,10 +47,10 @@ export class Application {
   status: 'PENDING' | 'REVIEWED' | 'REJECTED' | 'HIRED';
 
   @CreateDateColumn({ name: 'created_at' })
-  created_at: Date;
+  createdAt: Date;
 
   @UpdateDateColumn({ name: 'updated_at' })
-  updated_at: Date;
+  updatedAt: Date;
 
   @ManyToOne(() => Job, (job) => job.applications, {
     onDelete: 'CASCADE',

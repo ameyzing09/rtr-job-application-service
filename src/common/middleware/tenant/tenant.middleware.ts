@@ -2,13 +2,14 @@ import {
   Injectable,
   NestMiddleware,
   UnauthorizedException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
 
 interface JwtPayload {
-  tenant_id?: string;
+  tenantId?: string;
   tid?: string;
   role?: string;
   roles?: string[];
@@ -47,35 +48,64 @@ export class TenantMiddleware implements NestMiddleware {
       // Verify and decode token
       const decoded = jwt.verify(token, jwtSecret) as JwtPayload;
 
-      // Extract tenant_id from token payload
-      const tenantIdFromToken = decoded.tenant_id || decoded.tid;
+      // Extract tenantId from token payload
+      const tenantIdFromToken = decoded.tenantId || decoded.tid;
       if (!tenantIdFromToken) {
         throw new UnauthorizedException(
-          'Token does not contain tenant_id or tid',
+          'Token does not contain tenantId or tid',
         );
       }
 
-      // Verify that token's tenant_id matches header's tenant_id
+      // Verify that token's tenantId matches header's tenantId
+      // This is a critical security check: JWT.tid MUST equal X-Tenant-Id
+      // Never trust the header alone - always validate against the JWT
       if (tenantIdFromToken !== tenantIdFromHeader) {
-        throw new UnauthorizedException(
-          'Tenant ID mismatch between token and header',
+        throw new ForbiddenException(
+          'Access denied: Tenant ID in JWT does not match X-Tenant-Id header',
         );
       }
 
-      // Attach tenant_id to request for downstream use
+      // Attach tenantId to request for downstream use
       req['tenantId'] = tenantIdFromHeader;
       req['user'] = decoded; // Optionally attach decoded token payload
 
       next();
     } catch (error) {
-      if (error instanceof UnauthorizedException) {
-        res.status(401).json({ message: error.message });
+      if (error instanceof ForbiddenException) {
+        // 403: Valid authentication but attempting to access wrong tenant
+        res.status(403).json({
+          statusCode: 403,
+          message: error.message,
+          error: 'Forbidden',
+        });
+      } else if (error instanceof UnauthorizedException) {
+        // 401: Authentication failure (missing/invalid credentials)
+        res.status(401).json({
+          statusCode: 401,
+          message: error.message,
+          error: 'Unauthorized',
+        });
       } else if (error instanceof jwt.TokenExpiredError) {
-        res.status(401).json({ message: 'Token expired' });
+        // 401: Token is valid but expired
+        res.status(401).json({
+          statusCode: 401,
+          message: 'Token expired',
+          error: 'Unauthorized',
+        });
       } else if (error instanceof jwt.JsonWebTokenError) {
-        res.status(401).json({ message: 'Invalid token' });
+        // 401: Token is malformed or signature invalid
+        res.status(401).json({
+          statusCode: 401,
+          message: 'Invalid token',
+          error: 'Unauthorized',
+        });
       } else {
-        res.status(500).json({ message: 'Internal server error' });
+        // 500: Unexpected server error
+        res.status(500).json({
+          statusCode: 500,
+          message: 'Internal server error',
+          error: 'Internal Server Error',
+        });
       }
     }
   }

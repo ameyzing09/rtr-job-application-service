@@ -59,14 +59,14 @@ All requests MUST include both:
 The `TenantMiddleware` (applied globally to all routes in `app.module.ts`):
 - Validates both headers are present
 - Verifies JWT token using `JWT_SECRET` from environment
-- Extracts `tenant_id` (or `tid`) from token payload
-- Verifies token's tenant_id matches the `x-tenant-id` header
-- Attaches `tenant_id` to request object for downstream use
+- Extracts `tenantId` (or `tid`) from token payload
+- Verifies token's tenantId matches the `x-tenant-id` header
+- Attaches `tenantId` to request object for downstream use
 - Returns 401 Unauthorized on any validation failure
 
 **Critical**:
-- When adding new entities or services, ensure all queries filter by `tenant_id` to maintain tenant isolation
-- All API requests require valid JWT token with matching tenant_id
+- When adding new entities or services, ensure all queries filter by `tenantId` to maintain tenant isolation
+- All API requests require valid JWT token with matching tenantId
 
 ### Module Structure
 
@@ -84,7 +84,7 @@ Job (1) ---> (*) Application
 ```
 
 Both entities include:
-- `tenant_id` for multi-tenant isolation
+- `tenantId` for multi-tenant isolation
 - UUID primary keys
 - Indexed fields for query performance (see `@Index` decorators)
 - Timestamps (`created_at`, `updated_at`)
@@ -92,8 +92,8 @@ Both entities include:
 ### Data Access Patterns
 
 Services use TypeORM Repository pattern:
-1. All queries include `tenant_id` in the WHERE clause
-2. Methods accept `tenant_id` as the first parameter
+1. All queries include `tenantId` in the WHERE clause
+2. Methods accept `tenantId` as the first parameter
 3. `getBy*` methods throw `NotFoundException` when records don't exist
 4. Updates use `Object.assign()` followed by `save()`
 
