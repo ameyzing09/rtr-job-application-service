@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -8,13 +9,15 @@ import {
   Put,
   Req,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { JobService } from './job.service';
-import { CreateJobDto } from './job.dto';
+import { CreateJobDto, UpdateJobDto } from './job.dto';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 
 @Controller('job')
+@UseInterceptors(ClassSerializerInterceptor)
 export class JobController {
   constructor(private readonly jobService: JobService) {}
 
@@ -39,7 +42,7 @@ export class JobController {
   @Put(':jobId')
   async updateJob(
     @Param('jobId') jobId: string,
-    @Body() updateJobPayload: CreateJobDto,
+    @Body() updateJobPayload: UpdateJobDto,
     @Req() req: Request,
   ) {
     const tenantId = req['tenantId'] as string;

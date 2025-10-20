@@ -8,6 +8,7 @@ import {
   OneToMany,
   Index,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 
 @Entity('jobs')
 @Index('idx_jobs_tenant', ['tenantId'])
@@ -54,5 +55,6 @@ export class Job {
   updatedAt: Date;
 
   @OneToMany(() => Application, (application) => application.job)
+  @Exclude()
   applications: Application[];
 }

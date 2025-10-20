@@ -2,6 +2,7 @@ import {
   Injectable,
   NestMiddleware,
   UnauthorizedException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { ConfigService } from '@nestjs/config';
@@ -56,9 +57,11 @@ export class TenantMiddleware implements NestMiddleware {
       }
 
       // Verify that token's tenantId matches header's tenantId
+      // This is a critical security check: JWT.tid MUST equal X-Tenant-Id
+      // Never trust the header alone - always validate against the JWT
       if (tenantIdFromToken !== tenantIdFromHeader) {
-        throw new UnauthorizedException(
-          'Tenant ID mismatch between token and header',
+        throw new ForbiddenException(
+          'Access denied: Tenant ID in JWT does not match X-Tenant-Id header',
         );
       }
 
@@ -68,14 +71,41 @@ export class TenantMiddleware implements NestMiddleware {
 
       next();
     } catch (error) {
-      if (error instanceof UnauthorizedException) {
-        res.status(401).json({ message: error.message });
+      if (error instanceof ForbiddenException) {
+        // 403: Valid authentication but attempting to access wrong tenant
+        res.status(403).json({
+          statusCode: 403,
+          message: error.message,
+          error: 'Forbidden',
+        });
+      } else if (error instanceof UnauthorizedException) {
+        // 401: Authentication failure (missing/invalid credentials)
+        res.status(401).json({
+          statusCode: 401,
+          message: error.message,
+          error: 'Unauthorized',
+        });
       } else if (error instanceof jwt.TokenExpiredError) {
-        res.status(401).json({ message: 'Token expired' });
+        // 401: Token is valid but expired
+        res.status(401).json({
+          statusCode: 401,
+          message: 'Token expired',
+          error: 'Unauthorized',
+        });
       } else if (error instanceof jwt.JsonWebTokenError) {
-        res.status(401).json({ message: 'Invalid token' });
+        // 401: Token is malformed or signature invalid
+        res.status(401).json({
+          statusCode: 401,
+          message: 'Invalid token',
+          error: 'Unauthorized',
+        });
       } else {
-        res.status(500).json({ message: 'Internal server error' });
+        // 500: Unexpected server error
+        res.status(500).json({
+          statusCode: 500,
+          message: 'Internal server error',
+          error: 'Internal Server Error',
+        });
       }
     }
   }

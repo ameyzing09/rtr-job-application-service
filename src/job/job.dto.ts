@@ -7,7 +7,7 @@ import {
   IsString,
   IsUrl,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { IsPublishBeforeExpire } from '../common/validators/date-range.validator';
 import { ValidateJobExtra } from '../common/validators/job-extra.validator';
 
@@ -45,6 +45,9 @@ export class CreateJobDto {
 
   @IsUrl()
   @IsOptional()
+  @Transform(({ value }: { value: string }) => (value === '' ? null : value), {
+    toClassOnly: true,
+  })
   externalApplyUrl?: string;
 
   @IsObject()
@@ -87,6 +90,9 @@ export class UpdateJobDto {
 
   @IsUrl()
   @IsOptional()
+  @Transform(({ value }: { value: string }) => (value === '' ? null : value), {
+    toClassOnly: true,
+  })
   externalApplyUrl?: string;
 
   @IsObject()

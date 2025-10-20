@@ -50,8 +50,25 @@ export class JobService {
     updateJobPayload: UpdateJobDto,
   ): Promise<Job> {
     const job = await this.getJobsById(tenantId, jobId);
-    Object.assign(job, updateJobPayload);
-    return this.jobRepository.save(job);
+
+    // Only assign defined values to avoid overwriting with undefined
+    // Exclude relation fields and system fields that shouldn't be updated
+    const excludedFields = new Set(['applications', 'createdAt', 'updatedAt', 'id', 'tenantId']);
+    const updates: Record<string, unknown> = {};
+    for (const key of Object.keys(updateJobPayload) as (keyof UpdateJobDto)[]) {
+      if (excludedFields.has(key as string)) {
+        continue;
+      }
+      const value = updateJobPayload[key];
+      if (value !== undefined) {
+        updates[key] = value;
+      }
+    }
+    Object.assign(job, updates);
+
+    const updateResponse = await this.jobRepository.save(job);
+    console.log('Updated Job:', updateResponse);
+    return updateResponse;
   }
 
   async deleteJob(tenantId: string, jobId: string): Promise<void> {

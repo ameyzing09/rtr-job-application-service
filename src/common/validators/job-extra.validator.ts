@@ -7,6 +7,7 @@ import {
 } from 'class-validator';
 import { Injectable, Inject, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
 import { SchemaValidationService } from '../../tenant/schema-validation.service';
 
 @ValidatorConstraint({ name: 'ValidateJobExtra', async: true })
@@ -16,19 +17,32 @@ export class ValidateJobExtraConstraint
 {
   constructor(
     private readonly schemaValidationService: SchemaValidationService,
-    @Inject(REQUEST) private readonly request: Record<string, unknown>,
+    @Inject(REQUEST) private readonly request: Request,
   ) {}
 
   async validate(
     value: Record<string, unknown> | undefined,
     _args: ValidationArguments,
   ): Promise<boolean> {
-    // Get tenantId from the request (set by TenantMiddleware)
-    const tenantId = this.request['tenantId'] as string;
+    // Get tenantId from request (set by middleware) or header (fallback)
+    if (!this.request) {
+      // If request is not available, skip validation
+      return true;
+    }
+
+    // Try to get tenantId from request (set by middleware first)
+    let tenantId: string | undefined = this.request.tenantId as string;
+
+    // Fallback to header if middleware hasn't set it yet
+    if (!tenantId && this.request.headers) {
+      tenantId = (this.request.headers['x-tenant-id'] ||
+        this.request.headers['X-Tenant-Id'] ||
+        this.request['X-Tenant-ID']) as string;
+    }
 
     if (!tenantId) {
       // If no tenantId is available, we can't validate
-      // This shouldn't happen in normal flow as tenantId is set by middleware
+      // This shouldn't happen in normal flow as tenantId header is required
       return true;
     }
 
