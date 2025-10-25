@@ -12,8 +12,10 @@ import { JobModule } from './job/job.module';
 import { ApplicationsModule } from './applications/applications.module';
 import { StorageModule } from './storage/storage.module';
 import { TenantMiddleware } from './common/middleware/tenant/tenant.middleware';
+import { RequestIdMiddleware } from './common/middleware/request-id/request-id.middleware';
 import { TenantModule } from './tenant/tenant.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { PrometheusModule } from './observability/prometheus.module';
 
 @Module({
   imports: [
@@ -29,6 +31,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
         },
       ],
     }),
+    PrometheusModule,
     TenantModule,
     JobModule,
     ApplicationsModule,
@@ -39,6 +42,10 @@ import { ThrottlerModule } from '@nestjs/throttler';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
+    // Apply RequestIdMiddleware first to all routes
+    consumer.apply(RequestIdMiddleware).forRoutes('*');
+
+    // Apply TenantMiddleware to all routes except public
     consumer
       .apply(TenantMiddleware)
       .exclude({ path: 'public/(.*)', method: RequestMethod.ALL })

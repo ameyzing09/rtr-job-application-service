@@ -9,12 +9,13 @@ import {
 import { Observable } from 'rxjs';
 import { Request } from 'express';
 import { TenantService } from '../../tenant/tenant.service';
-import { Tenant } from '../../tenant/tenant.entity';
+import { TenantDto } from '../../auth-adapter/auth-adapter.dto';
 import { extractSubdomain } from '../utils/subdomain.util';
 
 interface RequestWithTenant extends Request {
   tenantId?: string;
-  tenant?: Tenant;
+  tenant?: TenantDto;
+  requestId?: string;
 }
 
 /**
@@ -42,8 +43,15 @@ export class TenantResolverInterceptor implements NestInterceptor {
       throw new BadRequestException('Subdomain required in host header');
     }
 
-    // Look up tenant by slug
-    const tenant = await this.tenantService.findBySlug(subdomain);
+    // Get request ID if available
+    const requestId = request.requestId;
+
+    // Look up tenant by slug (public endpoint - no JWT required)
+    const tenant = await this.tenantService.findBySlug(
+      subdomain,
+      undefined,
+      requestId,
+    );
     if (!tenant) {
       throw new NotFoundException('Tenant not found');
     }

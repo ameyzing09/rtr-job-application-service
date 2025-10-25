@@ -32,5 +32,6 @@ export class CreatePublicApplicationDto {
 
 export interface PublicApplicationResponseDto {
   id: string;
-  status: 'PENDING' | 'REVIEWED' | 'REJECTED' | 'HIRED';
+  status: 'PENDING' | 'REVIEWED' | 'REJECTED' | 'HIRED' | 'IN_PROGRESS';
+  tracking_token: string;
 }

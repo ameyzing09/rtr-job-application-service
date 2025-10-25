@@ -1,12 +1,16 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Tenant } from './tenant.entity';
-import { TenantSettings } from './tenant-settings.entity';
 import { TenantService } from './tenant.service';
 import { SchemaValidationService } from './schema-validation.service';
+import { AuthAdapterModule } from '../auth-adapter/auth-adapter.module';
 
+/**
+ * Tenant Module
+ *
+ * No longer manages tenant database tables directly.
+ * Uses AuthAdapterModule to call user-auth-service APIs for tenant data.
+ */
 @Module({
-  imports: [TypeOrmModule.forFeature([Tenant, TenantSettings])],
+  imports: [AuthAdapterModule],
   providers: [TenantService, SchemaValidationService],
   exports: [TenantService, SchemaValidationService],
 })

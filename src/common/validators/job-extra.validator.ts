@@ -46,10 +46,28 @@ export class ValidateJobExtraConstraint
       return true;
     }
 
+    // Extract JWT token from Authorization header
+    const authHeader = this.request.headers['authorization'] as string;
+    let jwtToken = '';
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      jwtToken = authHeader.substring(7);
+    }
+
+    // If no JWT token, we can't validate (tenant settings requires auth)
+    if (!jwtToken) {
+      // Fallback to permissive validation
+      return true;
+    }
+
+    // Get request ID if available
+    const requestId = this.request['requestId'] as string | undefined;
+
     // Validate using the schema validation service
     const result = await this.schemaValidationService.validateJobExtra(
       tenantId,
       value,
+      jwtToken,
+      requestId,
     );
 
     // Store errors in the constraint for custom message

@@ -7,12 +7,16 @@ import { Application } from './applications.entity';
 import { Job } from 'src/job/job.entity';
 import { TenantModule } from '../tenant/tenant.module';
 import { CaptchaModule } from '../captcha/captcha.module';
+import { PipelineModule } from '../pipeline/pipeline.module';
+import { PrometheusModule } from '../observability/prometheus.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Application, Job]),
     TenantModule,
     CaptchaModule,
+    PipelineModule,
+    PrometheusModule,
   ],
   providers: [ApplicationsService],
   controllers: [ApplicationsController, PublicApplicationsController],

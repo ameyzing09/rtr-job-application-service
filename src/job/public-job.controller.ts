@@ -40,8 +40,15 @@ export class PublicJobController {
       throw new BadRequestException('Subdomain required in host header');
     }
 
-    // Look up tenant by slug
-    const tenant = await this.tenantService.findBySlug(subdomain);
+    // Get request ID if available
+    const requestId = req['requestId'] as string | undefined;
+
+    // Look up tenant by slug (public endpoint - no JWT required)
+    const tenant = await this.tenantService.findBySlug(
+      subdomain,
+      undefined,
+      requestId,
+    );
     if (!tenant) {
       throw new NotFoundException('Tenant not found');
     }
@@ -66,8 +73,15 @@ export class PublicJobController {
       throw new BadRequestException('Subdomain required in host header');
     }
 
-    // Look up tenant by slug
-    const tenant = await this.tenantService.findBySlug(subdomain);
+    // Get request ID if available
+    const requestId = req['requestId'] as string | undefined;
+
+    // Look up tenant by slug (public endpoint - no JWT required)
+    const tenant = await this.tenantService.findBySlug(
+      subdomain,
+      undefined,
+      requestId,
+    );
     if (!tenant) {
       throw new NotFoundException('Tenant not found');
     }

@@ -14,6 +14,9 @@ import {
 @Index('idx_app_tenant', ['tenantId'])
 @Index('idx_app_job', ['jobId'])
 @Index('idx_app_tenant_status', ['tenantId', 'status'])
+@Index('idx_app_tenant_pipeline', ['tenantId', 'pipelineId'])
+@Index('idx_app_tenant_created', ['tenantId', 'createdAt'])
+@Index('idx_app_tracking_token', ['trackingToken'], { unique: true })
 export class Application {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -39,12 +42,21 @@ export class Application {
   @Column({ name: 'cover_letter', type: 'text', nullable: true })
   coverLetter?: string;
 
+  @Column({ name: 'pipeline_id', type: 'uuid', nullable: true })
+  pipelineId?: string;
+
+  @Column({ name: 'current_stage_index', type: 'int', default: 0 })
+  currentStageIndex: number;
+
+  @Column({ name: 'tracking_token', type: 'varchar', length: 64, unique: true })
+  trackingToken: string;
+
   @Column({
     type: 'enum',
-    enum: ['PENDING', 'REVIEWED', 'REJECTED', 'HIRED'],
+    enum: ['PENDING', 'REVIEWED', 'REJECTED', 'HIRED', 'IN_PROGRESS'],
     default: 'PENDING',
   })
-  status: 'PENDING' | 'REVIEWED' | 'REJECTED' | 'HIRED';
+  status: 'PENDING' | 'REVIEWED' | 'REJECTED' | 'HIRED' | 'IN_PROGRESS';
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

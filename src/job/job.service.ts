@@ -53,7 +53,13 @@ export class JobService {
 
     // Only assign defined values to avoid overwriting with undefined
     // Exclude relation fields and system fields that shouldn't be updated
-    const excludedFields = new Set(['applications', 'createdAt', 'updatedAt', 'id', 'tenantId']);
+    const excludedFields = new Set([
+      'applications',
+      'createdAt',
+      'updatedAt',
+      'id',
+      'tenantId',
+    ]);
     const updates: Record<string, unknown> = {};
     for (const key of Object.keys(updateJobPayload) as (keyof UpdateJobDto)[]) {
       if (excludedFields.has(key as string)) {

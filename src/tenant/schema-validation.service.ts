@@ -1,7 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { TenantSettings } from './tenant-settings.entity';
+import { Injectable, Logger } from '@nestjs/common';
+import { AuthAdapterService } from '../auth-adapter/auth-adapter.service';
 import Ajv, { ErrorObject, ValidateFunction } from 'ajv';
 
 interface CacheEntry {
@@ -16,6 +14,7 @@ interface ValidationResult {
 
 @Injectable()
 export class SchemaValidationService {
+  private readonly logger = new Logger(SchemaValidationService.name);
   private readonly ajv: Ajv;
   private readonly cache: Map<string, CacheEntry>;
   private readonly CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
@@ -24,10 +23,7 @@ export class SchemaValidationService {
     additionalProperties: true,
   };
 
-  constructor(
-    @InjectRepository(TenantSettings)
-    private tenantSettingsRepository: Repository<TenantSettings>,
-  ) {
+  constructor(private readonly authAdapter: AuthAdapterService) {
     this.ajv = new Ajv({ allErrors: true });
     this.cache = new Map<string, CacheEntry>();
   }
@@ -36,19 +32,23 @@ export class SchemaValidationService {
    * Validate the extra field against tenant-specific schema
    * @param tenantId - Tenant identifier
    * @param extra - The extra field data to validate
+   * @param jwtToken - JWT token for authorization
+   * @param requestId - Optional request ID for tracing
    * @returns Validation result with errors if invalid
    */
   async validateJobExtra(
     tenantId: string,
     extra: Record<string, unknown> | undefined,
+    jwtToken: string,
+    requestId?: string,
   ): Promise<ValidationResult> {
     // If extra is undefined or null, it's valid (optional field)
     if (!extra) {
       return { valid: true };
     }
 
-    // Get the validator for this tenant (from cache or DB)
-    const validator = await this.getValidator(tenantId);
+    // Get the validator for this tenant (from cache or API)
+    const validator = await this.getValidator(tenantId, jwtToken, requestId);
 
     // Validate the data
     const valid = validator(extra);
@@ -65,15 +65,19 @@ export class SchemaValidationService {
   /**
    * Get or create a cached validator for a tenant
    */
-  private async getValidator(tenantId: string): Promise<ValidateFunction> {
+  private async getValidator(
+    tenantId: string,
+    jwtToken: string,
+    requestId?: string,
+  ): Promise<ValidateFunction> {
     // Check cache first
     const cached = this.cache.get(tenantId);
     if (cached && cached.expiresAt > Date.now()) {
       return cached.validator;
     }
 
-    // Fetch schema from database
-    const schema = await this.fetchSchema(tenantId);
+    // Fetch schema from auth-service API
+    const schema = await this.fetchSchema(tenantId, jwtToken, requestId);
 
     // Compile schema with AJV
     const validator = this.ajv.compile(schema);
@@ -88,20 +92,19 @@ export class SchemaValidationService {
   }
 
   /**
-   * Fetch job_fields_schema from tenant_settings table
+   * Fetch job_fields_schema from user-auth-service API
    */
   private async fetchSchema(
     tenantId: string,
+    jwtToken: string,
+    requestId?: string,
   ): Promise<Record<string, unknown>> {
     try {
-      const settings = await this.tenantSettingsRepository.findOne({
-        where: { tenantId },
-      });
-
-      // If no settings found, use permissive schema
-      if (!settings) {
-        return this.PERMISSIVE_SCHEMA;
-      }
+      const settings = await this.authAdapter.getTenantSettings(
+        tenantId,
+        jwtToken,
+        requestId,
+      );
 
       // Extract job_fields_schema from config
       const jobFieldsSchema = settings.config?.job_fields_schema;
@@ -112,9 +115,13 @@ export class SchemaValidationService {
       }
 
       return jobFieldsSchema;
-    } catch (error) {
+    } catch (error: unknown) {
       // On error, fall back to permissive schema
-      console.error(`Failed to fetch schema for tenant ${tenantId}:`, error);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(
+        `Failed to fetch schema for tenant ${tenantId}: ${errorMessage}`,
+      );
       return this.PERMISSIVE_SCHEMA;
     }
   }
